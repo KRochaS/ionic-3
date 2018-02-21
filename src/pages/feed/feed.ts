@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 import { MovieProvider } from '../../providers/movie/movie';
+import { FilmeDetalhesPage } from '../filme-detalhes/filme-detalhes';
 
 /**
  * Generated class for the FeedPage page.
@@ -29,10 +30,13 @@ export class FeedPage {
   }
 
   public listaFilmes = new Array<any>();
+  public page = 1;
+
   nomeUsuario: string = "Karine Rocha Código";
   public loader;
   public refresher;
   public isRefreshing: boolean = false;
+  public infiniteScroll;
 
   constructor(
 		public navCtrl: NavController,
@@ -70,16 +74,37 @@ export class FeedPage {
       this.carregarFilmes();
     }
 
-    carregarFilmes() {
+    abrirDetalhes(filme) {
+      console.log(filme);
+      this.navCtrl.push(FilmeDetalhesPage, {id: filme.id}); // na função .push é possível usar dois parametros
+      // 1º Página, 2º um objeto que manda os dados para pagina
+    }
+
+    doInfinite(infiniteScroll) {
+      this.page++; // adiciona mais uma página
+      this.infiniteScroll = infiniteScroll;
+      this.carregarFilmes(true);
+
+    }
+
+    carregarFilmes(newpage: boolean = false) {
       this.abreCarregando();
       console.log('ionViewDidLoad FeedPage');
     // this.soma(1,2);
-    this.movieProvider.getLatestMovies().subscribe(
+    this.movieProvider.getLatestMovies(this.page).subscribe(
       data => {
         const response = (data as any); // transformou a resposta em um objeto de qualquer tipo para pegar qualquer valor de dentro
         const objeto_retorno = JSON.parse(response._body); // transformou em JSON.parse  para transformar o que seria um texto em JSON.
-        this.listaFilmes = objeto_retorno.results;
-        console.log(objeto_retorno);
+
+
+        // carregando infinite scroll dos filmes no feed
+        if(newpage) {
+          this.listaFilmes = this.listaFilmes.concat(objeto_retorno.results);
+          this.infiniteScroll.complete();
+        } else {
+          this.listaFilmes = objeto_retorno.results;
+        }
+
         this.fechaCarregando();
         if (this.isRefreshing) {
           this.refresher.complete();
