@@ -18,6 +18,9 @@
 
 
 <ion-content padding>
+
+  <img *ngIf="img"  [src]="img" alt="">  <!--  [src] fazendo binding, significa que não vou pegar um valor estático e sim uma variável -->
   Esse é meu perfil
 
+  <button ion-button block (click)="tirarFoto()"> Tirar Foto </button>
 </ion-content>
