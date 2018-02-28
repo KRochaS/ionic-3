@@ -15,11 +15,19 @@ export class MovieProvider {
   constructor(public http: Http) {
     console.log('Hello MovieProvider Provider');
   }
-
+/**
+ * Busca os últimos filmes da api
+ * @param page 
+ */
   getLatestMovies(page = 1) {
     return this.http.get(this.baseApiPath + `movie/popular?page=${page}&api_key=` + this.getApiKey());
   }
-
+  
+/**
+ * busca o id para retornar o detalhe do filme
+ * 
+ * @param filmeid id do filme
+ */
   getMovieDetails(filmeid) {
     return this.http.get(this.baseApiPath + `movie/${filmeid}?api_key=` + this.getApiKey());
   }
